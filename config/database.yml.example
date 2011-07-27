@@ -1,0 +1,11 @@
+:development:
+  :user: radiotag
+  :password: radiotag
+  :database: radiotag_development
+  :host: localhost
+
+:production:
+  :user: radiotag
+  :password: radiotag
+  :database: radiotag_production
+  :host: remotedb.example.com
