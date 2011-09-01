@@ -1,7 +1,3 @@
-require "rubygems"
-require "bundler"
-Bundler.require
-
 # add require_relative
 unless Kernel.respond_to?(:require_relative)
   module Kernel
@@ -10,6 +6,13 @@ unless Kernel.respond_to?(:require_relative)
     end
   end
 end
+
+require "rubygems"
+require File.join(File.dirname(__FILE__), 'load_path')
+LoadPath.base_path = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+
+require "bundler"
+Bundler.require
 
 require_relative 'authserver'
 require_relative 'config_helper'

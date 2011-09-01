@@ -1,4 +1,6 @@
 class AuthServer < Sinatra::Base
+  set :method_override, true
+
   def logger
     @logger ||= Logger.new(env['rack.errors'])
     @logger.progname = File.basename(__FILE__)
@@ -114,6 +116,37 @@ class AuthServer < Sinatra::Base
     end
   end
 
+  # get '/assoc' do
+  #   token = expect_param(:token)
+  #   if t = Token.first(:token => token)
+  #     status 200
+  #     t.to_json
+  #   else
+  #     status 404
+  #   end
+  # end
+
+  # need this form of delete for the _method override version
+  delete '/assoc' do
+    token = expect_param(:token)
+    if t = Token.first(:token => token)
+      t.destroy!
+      status 204
+    else
+      status 403
+    end
+  end
+
+  # and this form for normal DELETE
+  delete '/assoc/:token' do |token|
+    if t = Token.first(:token => token)
+      t.destroy!
+      status 204
+    else
+      status 403
+    end
+  end
+
   post '/account' do
     name = expect_param(:name)
     id = params[:id]
@@ -135,7 +168,7 @@ class AuthServer < Sinatra::Base
     end
   end
 
-  get '/account' do
+  get '/account/:id' do
     id = expect_param(:id)
 
     # Assume id valid
@@ -147,7 +180,7 @@ class AuthServer < Sinatra::Base
     end
   end
 
-  delete '/account' do
+  delete '/account/:id' do
     id = expect_param(:id)
 
     # Assume id valid
@@ -160,6 +193,4 @@ class AuthServer < Sinatra::Base
       status 404
     end
   end
-
-
 end

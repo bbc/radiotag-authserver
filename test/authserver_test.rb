@@ -185,9 +185,10 @@ class AuthServerTest < Test::Unit::TestCase
       end
 
       teardown do
-        delete '/account', :id => 42
-        token = Token.first(:token => "qwertz")
-        token.destroy
+        delete '/account/42'
+        if token = Token.first(:token => "qwertz")
+          token.destroy
+        end
       end
 
       context "associate an existing account with a registration key (i.e. device)" do
@@ -199,6 +200,29 @@ class AuthServerTest < Test::Unit::TestCase
           assert_json_response_contains "pin"
         end
       end
+
+      # context "assoc should exist" do
+      #   should "return 200 on get" do
+      #     get "/assoc", :token => "qwertz"
+      #     assert_status 200
+      #   end
+      # end
+
+      context "can be deleted" do
+        setup do
+          delete "/assoc/qwertz"
+        end
+
+        should "return 204 on delete" do
+          assert_status 204
+        end
+
+        should "return 404 on subsequent gets" do
+          get "/assoc", :token => "qwertz"
+          assert_status 404
+        end
+      end
+
     end
 
     context "an invalid registration" do
@@ -250,7 +274,7 @@ class AuthServerTest < Test::Unit::TestCase
     context "GET /account" do
       setup do
         post '/account', :id => 44, :name => "bob"
-        get '/account', :id => 44
+        get '/account/44'
       end
 
       should "return 200" do
@@ -266,7 +290,7 @@ class AuthServerTest < Test::Unit::TestCase
     context "DELETE /account" do
       setup do
         post '/account', :id => 45, :name => "charlie"
-        delete '/account', :id => 45
+        delete '/account/45'
       end
 
       should "return 200" do
